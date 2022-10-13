@@ -18,36 +18,32 @@ class Command(BaseCommand):
             dataReader = csv.DictReader(csv_file)
 
             for row in dataReader:
-                genre = Genres()
-                title = Title()
-                title_genre = TitleGenres()
-                title_genre.id = row['id']
-                title.id = row['title_id']
-                genre.id = row['genre_id']
-
-                if TitleGenres.objects.filter(id=title_genre.id).exists():
-                    self.stdout.write(
-                        f'Связь {title.name} - {genre.name}'
-                        f'уже существует в базе.'
-                    )
-
-                elif TitleGenres.objects.filter(
-                    title=title.id, genre=genre.id
-                ).exists():
-                    self.stdout.write(
-                        f'Связь {title.name} - {genre.name}'
-                        f'уже существует в базе.'
-                    )
-
-                else:
-                    genre = Genres()
-                    title = Title()
+                try:
                     title_genre = TitleGenres()
                     title_genre.id = row['id']
-                    title.id = row['title_id']
-                    genre.id = row['genre_id']
-                    genre.save()
+                    title_id = row['title_id']
+                    genre_id = row['genre_id']
+                    title_genre.title = Title.objects.get(id=title_id)
+                    title_genre.genre = Genres.objects.get(id=genre_id)
+                
+                    if TitleGenres.objects.filter(id=title_genre.id).exists():
+                        self.stdout.write(
+                            f'Связь c id {title_genre.id}'
+                            f'уже существует в базе.'
+                        )
 
-                    self.stdout.write(
-                        f'Связь "{title.name} - {genre.name}" внесена в базу.'
-                    )
+                    elif TitleGenres.objects.filter(
+                        title=title_genre.title, genre=title_genre.genre
+                    ).exists():
+                        self.stdout.write(
+                            f'Связь {title_genre.title.name} -'
+                            f'{title_genre.genre.name} уже существует в базе.'
+                        )
+
+                    else:
+                        title_genre.save()
+
+                        self.stdout.write(
+                            f'Связь "{title_genre.title.name} -'
+                            f'{title_genre.genre.name}" внесена в базу.'
+                        )

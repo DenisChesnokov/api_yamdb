@@ -49,7 +49,7 @@ class Command(BaseCommand):
                     user.bio = row['bio']
                     user.first_name = row['first_name']
                     user.last_name = row['last_name']
-                    user.confirmation_code = ['confirmation_code']
+                    user.confirmation_code = row['confirmation_code']
                     user.save()
 
                     self.stdout.write(f'Юзер {user.username} внесен в базу.')
